@@ -1,0 +1,127 @@
+/* General container styling */
+div {
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f8ff;
+  }
+  
+  /* Header styling */
+  h1 {
+    text-align: center;
+    color: #ff4500;
+    font-size: 2.5em;
+  }
+  
+  /* List styling */
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    background-color: #ffe4b5;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    transition: transform 0.3s ease;
+  }
+  
+  li:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Links styling */
+  a {
+    text-decoration: none;
+    color: #ff6347;
+    font-weight: bold;
+  }
+  
+  a:hover {
+    color: #d2691e;
+  }
+  
+  /* Button styling - different color variants */
+  button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  /* Add Favorite button */
+  button.add-fav {
+    background-color: #32cd32;
+    color: rgb(154, 104, 209);
+  }
+  
+  button.add-fav:hover {
+    background-color: #228b22;
+    transform: translateY(-2px);
+  }
+  
+  /* Sort button */
+  button.sort {
+    background-color: #00bfff;
+    color: rgb(124, 22, 192);
+  }
+  
+  button.sort:hover {
+    background-color: #1e90ff;
+    transform: translateY(-2px);
+  }
+  
+  /* Recents button */
+  button.recents {
+    background-color: #ffa500;
+    color: rgb(79, 36, 172);
+  }
+  
+  button.recents:hover {
+    background-color: #ff8c00;
+    transform: translateY(-2px);
+  }
+  
+  /* View Favorites button */
+  button.view-fav {
+    background-color: #7150dc;
+    color: rgb(32, 14, 80);
+  }
+  
+  button.view-fav:hover {
+    background-color: #131fd1;
+    transform: translateY(-2px);
+  }
+  
+  /* Logout button */
+  button.logout {
+    background-color: #ff4500;
+    color: rgb(81, 57, 216);
+  }
+  
+  button.logout:hover {
+    background-color: #dc143c;
+    transform: translateY(-2px);
+  }
+  
+  /* Disabled button state */
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Link buttons */
+  button a {
+    color: rgb(75, 45, 207);
+    text-decoration: none;
+  }
+  
+  button a:hover {
+    color: #0973cf;
+  }
+  
