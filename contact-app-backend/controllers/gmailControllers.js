@@ -1,55 +1,80 @@
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-
-let otpStorage = {};
+const User = require('../models/User'); 
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
         user: 'kothuruphaneendrak@gmail.com',
-        pass: 'hnfw xgiv bygf bbay'
+        pass: 'hnfw xgiv bygf bbay' 
     },
 });
 
-const sendOtp = (req, res) => {
+const sendOtp = async (req, res) => {
     const { email } = req.body;
-    const otp = crypto.randomInt(100000, 999999).toString();
-    otpStorage[email] = { otp, expiresIn: Date.now() + 300000 };
+    try {
+        const otp = crypto.randomInt(100000, 999999).toString();
+        const otpExpiresIn = Date.now() + 300000;
 
-    const mailOptions = {
-        from: 'kothuruphaneendrak@gmail.com',
-        to: email,
-        subject: 'Your OTP for Verification',
-        text: `Your OTP is: ${otp}. It is valid for 5 minutes.`
-    };
+        let user = await User.findOne({ email });
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return res.status(500).json({ message: 'Error sending OTP', error });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
         }
-        res.status(200).json({ message: 'OTP sent successfully' });
-    });
+
+
+        user.otp = otp;
+        user.otpExpiresIn = otpExpiresIn; 
+        await user.save();
+
+        const mailOptions = {
+            from: 'kothuruphaneendrak@gmail.com',
+            to: email,
+            subject: 'Your OTP for Verification',
+            text: `Your OTP is: ${otp}. It is valid for 5 minutes.`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return res.status(500).json({ message: 'Error sending OTP', error });
+            }
+            res.status(200).json({ message: 'OTP sent successfully' });
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error Occured', error });
+    }
 };
 
-const verifyOtp = (req, res) => {
+
+const verifyOtp = async (req, res) => {
     const { email, otp } = req.body;
 
-    if (!otpStorage[email]) {
-        return res.status(400).json({ message: 'OTP not found. Please request a new one.' });
-    }
+    try {
+        const user = await User.findOne({ email });
 
-    const { otp: storedOtp, expiresIn } = otpStorage[email];
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
 
-    if (Date.now() > expiresIn) {
-        delete otpStorage[email];
-        return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
-    }
+        if (Date.now() > user.otpExpiresIn) {
+            return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+        }
 
-    if (otp === storedOtp) {
-        delete otpStorage[email];
-        res.status(200).json({ message: 'OTP verified successfully. Sign-in allowed.' });
-    } else {
-        res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+
+        if (otp === user.otp) {
+
+            user.otp = null;
+            user.otpExpiresIn = null;
+            await user.save();
+
+            res.status(200).json({ message: 'OTP verified successfully. Sign-in allowed.' });
+        } else {
+            res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error occured', error });
     }
 };
 
