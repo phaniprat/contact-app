@@ -5,12 +5,11 @@ import { useNavigate } from 'react-router-dom';
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isAuth, setIsAuth] = useState(false);
     const [otp, setOtp] = useState('');
     const [isOtpSent, setIsOtpSent] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) =>{
+    const handleOtp = async (e) =>{
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:3000/api/auth/send-otp', 
@@ -20,50 +19,45 @@ const LoginForm = () => {
             if(response){
                 setIsOtpSent(true);
             }   
-           
-            
         } catch (error) {
             console.log('OTP sending failed: ' + error.response.data.message || error.message);
         }
     }
 
-    const verifyOtp = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+       
         try {
-            return await axios.post('http://localhost:3000/api/auth/verify-otp', 
+    
+            await axios.post('http://localhost:3000/api/auth/verify-otp', 
                 { email, otp },
                 { headers: { 'Content-Type': 'application/json' } }
-            ).then(navigate('/contact'));
-        } catch (error) {
-            console.error('OTP verification Failed:', error);
-        }
-    }
-    
-    const handleOtp  = async (e) => {
-        e.preventDefault();
-        try {
-        
+            );
             
-            const response = await axios.post('http://localhost:3000/api/auth/login', 
+
+            const loginResponse = await axios.post('http://localhost:3000/api/auth/login', 
                 { email, password },
                 { headers: { 'Content-Type': 'application/json' } }
             );
-    
-            localStorage.setItem('userToken', response.data.token);
-            if(response){
-                setIsAuth(true);
-            }
-
+            localStorage.setItem('userToken', loginResponse.data.token);
+            navigate('/contact');
+            
         } catch (error) {
-            console.error('Login error:', error.message || error);
+            if (error.response && error.response.data) {
+                 console.error('Error:', error.response.data.message);
+            } else {
+                console.error('Error:', error.message);
+            }
         }
     };
+    
     
 
     return (
         <div>
             <h2>Login</h2>
-            {isAuth ? (
-                <form onSubmit={isOtpSent? verifyOtp : handleSubmit}>
+            {isOtpSent ? (
+                <form onSubmit={handleSubmit}>
                     <div>
                         <label>Enter OTP:</label>
                         <input
@@ -73,7 +67,7 @@ const LoginForm = () => {
                             
                         />
                     </div>
-                    <button type="submit">{isOtpSent? "Submit" :"send OTP"}</button>
+                    <button type="submit">Submit-otp</button>
                 </form>
             ) : 
             <form onSubmit={handleOtp}>
