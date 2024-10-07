@@ -125,3 +125,23 @@ exports.getFavContacts = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.searchContacts = async (req, res) => {
+  try {
+    const { name } = req.query; 
+    const contacts = await Contact.find({
+      userId: req.userId  ,
+      name: { $regex: name, $options: "i" }
+    });
+
+    if (contacts.length > 0) {
+      res.status(200).json(contacts);
+    } else {
+      res.status(404).json({ error: "No contacts found matching the search results." });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+

@@ -13,6 +13,7 @@ router.get('/:id', authMiddleware, contactController.getContactById);
 router.put('/:id', authMiddleware, contactController.updateContact);
 router.delete('/:id', authMiddleware, contactController.deleteContact);
 router.patch('/:id', authMiddleware, contactController.updateFavContact);
+router.get('/filter/search', authMiddleware, contactController.searchContacts);
 
 
 module.exports = router;
